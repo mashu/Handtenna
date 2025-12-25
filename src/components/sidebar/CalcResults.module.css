@@ -1,0 +1,42 @@
+.calcResults {
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  margin-top: 8px;
+}
+
+.calcRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.calcRow:last-child {
+  border-bottom: none;
+}
+
+.calcLabel {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.calcValue {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.good {
+  color: var(--success);
+}
+
+.warning {
+  color: var(--warning);
+}
+
+.info {
+  color: var(--info);
+}
+
