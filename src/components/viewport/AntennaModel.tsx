@@ -3,7 +3,16 @@
 import { useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
 import { buildAntennaModelWithProgress, getBuildParams } from '@/lib/model-builder';
+import { NUT_SPECS, CONNECTOR_SPECS } from '@/lib/constants';
 import type { AntennaParams } from '@/types/antenna';
+
+// Marker colors
+const COLORS = {
+  wireHole: 0x60a5fa,      // Blue - wire holes
+  radioConnector: 0x4ade80, // Green - BNC/SMA connector
+  counterpoise: 0xfbbf24,   // Yellow - counterpoise
+  nutBore: 0xf472b6,        // Pink - nut bore
+};
 
 interface AntennaModelProps {
   params: AntennaParams;
@@ -51,12 +60,20 @@ export function AntennaModel({ params, onBuildStart, onBuildProgress, onBuildCom
     buildModel();
   }, [params, onBuildStart, onBuildProgress, onBuildComplete]);
 
-  // Wire hole markers
+  // Calculate marker positions
+  const baseRadius = params.baseDiameter / 2;
   const coilBottom = params.baseHeight;
   const coilTop = coilBottom + params.coilHeight;
   const coilRadius = params.coilDiameter / 2;
   const wireTopY = coilTop - 5;
   const wireBotY = coilBottom + 5;
+  const baseMiddleY = params.baseHeight / 2;
+  const postTop = coilTop + params.postHeight;
+
+  // Get connector specs
+  const radioConnector = CONNECTOR_SPECS[params.radioConnector];
+  const counterpoiseConnector = CONNECTOR_SPECS[params.counterpoiseConnector];
+  const nut = NUT_SPECS[params.threadType];
 
   if (!geometry) {
     return null;
@@ -74,17 +91,45 @@ export function AntennaModel({ params, onBuildStart, onBuildProgress, onBuildCom
         />
       </mesh>
 
-      {/* Wire hole markers */}
+      {/* Top wire hole marker (blue) */}
       <mesh position={[coilRadius + 1, wireTopY, 0]} rotation={[0, Math.PI / 2, 0]}>
         <torusGeometry args={[params.wireHoleDiameter / 2 + 0.5, 0.4, 8, 16]} />
-        <meshBasicMaterial color={0x60a5fa} />
+        <meshBasicMaterial color={COLORS.wireHole} />
       </mesh>
 
+      {/* Bottom wire hole marker (blue) */}
       <mesh position={[coilRadius + 1, wireBotY, 0]} rotation={[0, Math.PI / 2, 0]}>
         <torusGeometry args={[params.wireHoleDiameter / 2 + 0.5, 0.4, 8, 16]} />
-        <meshBasicMaterial color={0x60a5fa} />
+        <meshBasicMaterial color={COLORS.wireHole} />
+      </mesh>
+
+      {/* Radio connector hole marker (green) - on +Z side, vertical orientation */}
+      <mesh position={[0, baseMiddleY, baseRadius + 1]}>
+        <torusGeometry args={[radioConnector.holeDiameter / 2 + 0.5, 0.5, 8, 16]} />
+        <meshBasicMaterial color={COLORS.radioConnector} />
+      </mesh>
+
+      {/* Counterpoise hole marker (yellow) - on +X side */}
+      <mesh position={[baseRadius + 1, baseMiddleY, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <torusGeometry args={[counterpoiseConnector.holeDiameter / 2 + 0.5, 0.4, 8, 16]} />
+        <meshBasicMaterial color={COLORS.counterpoise} />
+      </mesh>
+
+      {/* Counterpoise hole marker (yellow) - on -X side */}
+      <mesh position={[-baseRadius - 1, baseMiddleY, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <torusGeometry args={[counterpoiseConnector.holeDiameter / 2 + 0.5, 0.4, 8, 16]} />
+        <meshBasicMaterial color={COLORS.counterpoise} />
+      </mesh>
+
+      {/* Nut bore marker (pink) - at top */}
+      <mesh position={[0, postTop + 1, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[nut.bore / 2 + 0.5, 0.5, 8, 16]} />
+        <meshBasicMaterial color={COLORS.nutBore} />
       </mesh>
     </group>
   );
 }
+
+// Export colors for legend
+export { COLORS as MARKER_COLORS };
 

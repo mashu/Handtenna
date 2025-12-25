@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import styles from './Viewport.module.css';
 import { ViewportOverlay } from './ViewportOverlay';
+import { Legend } from './Legend';
 import type { AntennaParams, ModelDimensions } from '@/types/antenna';
 import type * as THREE from 'three';
 
@@ -68,6 +69,7 @@ export function Viewport({ params, dimensions, status, onGeometryReady }: Viewpo
       )}
 
       <ViewportOverlay dimensions={dimensions} status={status} />
+      <Legend />
     </main>
   );
 }
