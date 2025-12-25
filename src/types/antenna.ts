@@ -6,6 +6,7 @@ export interface AntennaParams {
   band: BandName;
   frequency: number; // kHz
   whipLength: number; // meters
+  turnsToWind: number; // 0 = auto (use calculated turns)
 
   // Coil Former
   coilDiameter: number; // mm
@@ -31,6 +32,7 @@ export const DEFAULT_PARAMS: AntennaParams = {
   band: '20m',
   frequency: 14200,
   whipLength: 2.5,
+  turnsToWind: 0,
   coilDiameter: 25,
   coilHeight: 60,
   showGrooves: true,

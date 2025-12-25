@@ -47,3 +47,10 @@
   line-height: 1.4;
 }
 
+.calcNote {
+  margin-top: 10px;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+

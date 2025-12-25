@@ -22,7 +22,22 @@ export interface BuildParams {
   counterpoiseHoleDiameter: number;
 }
 
-export function getBuildParams(params: AntennaParams): BuildParams {
+export type ModelInputParams = Pick<
+  AntennaParams,
+  | 'coilDiameter'
+  | 'coilHeight'
+  | 'showGrooves'
+  | 'groovePitch'
+  | 'wireHoleDiameter'
+  | 'baseDiameter'
+  | 'baseHeight'
+  | 'postHeight'
+  | 'threadType'
+  | 'radioConnector'
+  | 'counterpoiseConnector'
+>;
+
+export function getBuildParams(params: ModelInputParams): BuildParams {
   const nut = NUT_SPECS[params.threadType];
   const radioConnector = CONNECTOR_SPECS[params.radioConnector];
   const counterpoiseConnector = CONNECTOR_SPECS[params.counterpoiseConnector];

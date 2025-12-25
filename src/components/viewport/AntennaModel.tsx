@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { buildAntennaModelWithProgress, getBuildParams } from '@/lib/model-builder';
+import { buildAntennaModelWithProgress, getBuildParams, type ModelInputParams } from '@/lib/model-builder';
 import { NUT_SPECS, CONNECTOR_SPECS } from '@/lib/constants';
 import type { AntennaParams } from '@/types/antenna';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
 // Marker colors
 const COLORS = {
@@ -26,6 +27,39 @@ export function AntennaModel({ params, onBuildStart, onBuildProgress, onBuildCom
   const [geometry, setGeometry] = useState<THREE.BufferGeometry | null>(null);
   const buildIdRef = useRef(0);
 
+  // Only these params affect the 3D model. (RF params like band/frequency/whip length should not trigger rebuilds.)
+  const modelInputParams = useMemo<ModelInputParams>(
+    () => ({
+      coilDiameter: params.coilDiameter,
+      coilHeight: params.coilHeight,
+      showGrooves: params.showGrooves,
+      groovePitch: params.groovePitch,
+      wireHoleDiameter: params.wireHoleDiameter,
+      baseDiameter: params.baseDiameter,
+      baseHeight: params.baseHeight,
+      postHeight: params.postHeight,
+      threadType: params.threadType,
+      radioConnector: params.radioConnector,
+      counterpoiseConnector: params.counterpoiseConnector,
+    }),
+    [
+      params.coilDiameter,
+      params.coilHeight,
+      params.showGrooves,
+      params.groovePitch,
+      params.wireHoleDiameter,
+      params.baseDiameter,
+      params.baseHeight,
+      params.postHeight,
+      params.threadType,
+      params.radioConnector,
+      params.counterpoiseConnector,
+    ]
+  );
+
+  // Debounce rebuilds to avoid lag while dragging sliders.
+  const debouncedModelParams = useDebouncedValue(modelInputParams, 250);
+
   useEffect(() => {
     const currentBuildId = ++buildIdRef.current;
 
@@ -34,7 +68,7 @@ export function AntennaModel({ params, onBuildStart, onBuildProgress, onBuildCom
       onBuildProgress?.(0);
 
       try {
-        const buildParams = getBuildParams(params);
+        const buildParams = getBuildParams(debouncedModelParams);
 
         // Use async build with progress reporting
         const geo = await buildAntennaModelWithProgress(buildParams, (progress) => {
@@ -59,22 +93,22 @@ export function AntennaModel({ params, onBuildStart, onBuildProgress, onBuildCom
     };
 
     buildModel();
-  }, [params, onBuildStart, onBuildProgress, onBuildComplete]);
+  }, [debouncedModelParams, onBuildStart, onBuildProgress, onBuildComplete]);
 
   // Calculate marker positions
-  const baseRadius = params.baseDiameter / 2;
-  const coilBottom = params.baseHeight;
-  const coilTop = coilBottom + params.coilHeight;
-  const coilRadius = params.coilDiameter / 2;
+  const baseRadius = debouncedModelParams.baseDiameter / 2;
+  const coilBottom = debouncedModelParams.baseHeight;
+  const coilTop = coilBottom + debouncedModelParams.coilHeight;
+  const coilRadius = debouncedModelParams.coilDiameter / 2;
   const wireTopY = coilTop - 5;
   const wireBotY = coilBottom + 5;
-  const baseMiddleY = params.baseHeight / 2;
-  const postTop = coilTop + params.postHeight;
+  const baseMiddleY = debouncedModelParams.baseHeight / 2;
+  const postTop = coilTop + debouncedModelParams.postHeight;
 
   // Get connector specs
-  const radioConnector = CONNECTOR_SPECS[params.radioConnector];
-  const counterpoiseConnector = CONNECTOR_SPECS[params.counterpoiseConnector];
-  const nut = NUT_SPECS[params.threadType];
+  const radioConnector = CONNECTOR_SPECS[debouncedModelParams.radioConnector];
+  const counterpoiseConnector = CONNECTOR_SPECS[debouncedModelParams.counterpoiseConnector];
+  const nut = NUT_SPECS[debouncedModelParams.threadType];
 
   if (!geometry) {
     return null;
@@ -94,13 +128,13 @@ export function AntennaModel({ params, onBuildStart, onBuildProgress, onBuildCom
 
       {/* Top wire hole marker (blue) */}
       <mesh position={[coilRadius + 1, wireTopY, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <torusGeometry args={[params.wireHoleDiameter / 2 + 0.5, 0.4, 8, 16]} />
+        <torusGeometry args={[debouncedModelParams.wireHoleDiameter / 2 + 0.5, 0.4, 8, 16]} />
         <meshBasicMaterial color={COLORS.wireHole} />
       </mesh>
 
       {/* Bottom wire hole marker (blue) */}
       <mesh position={[coilRadius + 1, wireBotY, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <torusGeometry args={[params.wireHoleDiameter / 2 + 0.5, 0.4, 8, 16]} />
+        <torusGeometry args={[debouncedModelParams.wireHoleDiameter / 2 + 0.5, 0.4, 8, 16]} />
         <meshBasicMaterial color={COLORS.wireHole} />
       </mesh>
 

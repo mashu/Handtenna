@@ -57,6 +57,10 @@ export function CalcResults({ quarterWavelength, inductance, turnsNeeded, maxTur
         value={`${maxTurns} turns`} 
         variant="info" 
       />
+      <div className={styles.calcNote}>
+        RF math here is a **rule-of-thumb design calculator** (Wheeler coil estimate + simplified loading reactance).
+        Real results depend heavily on ground losses, coil Q, nearby objects, and matching network—validate with an antenna analyzer.
+      </div>
     </div>
   );
 }

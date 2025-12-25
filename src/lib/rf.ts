@@ -9,6 +9,23 @@ export interface RFCalculationResult {
 }
 
 /**
+ * Estimate inductance (µH) of a single-layer air-core solenoid using Wheeler's formula.
+ * r = radius in inches, l = length in inches
+ * L(µH) = (r^2 * n^2) / (9r + 10l)
+ */
+export function estimateInductanceFromTurns(
+  turns: number,
+  coilDiameterMM: number,
+  coilLengthMM: number
+): number {
+  if (!Number.isFinite(turns) || turns <= 0) return 0;
+  const radiusInches = (coilDiameterMM / 2 / 1000) * 39.37;
+  const lengthInches = (coilLengthMM / 1000) * 39.37;
+  if (radiusInches <= 0 || lengthInches <= 0) return 0;
+  return (radiusInches * radiusInches * turns * turns) / (9 * radiusInches + 10 * lengthInches);
+}
+
+/**
  * Calculate RF parameters for the antenna
  * Uses standard formulas for mobile antenna loading coil design
  */
