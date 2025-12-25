@@ -9,7 +9,8 @@ import type { AntennaParams } from '@/types/antenna';
 // Marker colors
 const COLORS = {
   wireHole: 0x60a5fa,      // Blue - wire holes
-  radioConnector: 0x4ade80, // Green - BNC/SMA connector
+  radioConnector: 0x4ade80, // Green - side BNC/SMA connector
+  bottomBnc: 0x22d3ee,      // Cyan - bottom BNC (radio mount)
   counterpoise: 0xfbbf24,   // Yellow - counterpoise
   nutBore: 0xf472b6,        // Pink - nut bore
 };
@@ -125,6 +126,12 @@ export function AntennaModel({ params, onBuildStart, onBuildProgress, onBuildCom
       <mesh position={[0, postTop + 1, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[nut.bore / 2 + 0.5, 0.5, 8, 16]} />
         <meshBasicMaterial color={COLORS.nutBore} />
+      </mesh>
+
+      {/* Bottom BNC hole marker (cyan) - for mounting on radio */}
+      <mesh position={[0, -1, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[radioConnector.holeDiameter / 2 + 0.5, 0.5, 8, 16]} />
+        <meshBasicMaterial color={COLORS.bottomBnc} />
       </mesh>
     </group>
   );

@@ -1,7 +1,9 @@
 import type { NutType, RadioConnectorType, CounterpoiseConnectorType } from '@/lib/constants';
+import type { BandName } from '@/lib/bands';
 
 export interface AntennaParams {
   // RF Parameters
+  band: BandName;
   frequency: number; // kHz
   whipLength: number; // meters
 
@@ -26,6 +28,7 @@ export interface AntennaParams {
 }
 
 export const DEFAULT_PARAMS: AntennaParams = {
+  band: '20m',
   frequency: 14200,
   whipLength: 2.5,
   coilDiameter: 25,

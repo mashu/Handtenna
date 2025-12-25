@@ -4,7 +4,8 @@ import styles from './Legend.module.css';
 
 const LEGEND_ITEMS = [
   { color: '#60a5fa', label: 'Wire holes' },
-  { color: '#4ade80', label: 'Radio connector' },
+  { color: '#4ade80', label: 'Side connector' },
+  { color: '#22d3ee', label: 'Bottom BNC (radio)' },
   { color: '#fbbf24', label: 'Counterpoise' },
   { color: '#f472b6', label: 'Nut bore' },
 ];

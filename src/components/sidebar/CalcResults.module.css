@@ -40,3 +40,10 @@
   color: var(--info);
 }
 
+.calcWarning {
+  font-size: 0.72rem;
+  color: var(--warning);
+  padding: 8px 0 4px;
+  line-height: 1.4;
+}
+

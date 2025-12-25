@@ -162,6 +162,18 @@ export function buildAntennaModel(params: BuildParams): CSG {
   );
   csg = csg.subtract(CSG.fromGeometry(counterpoiseGeometry));
 
+  // 15. BOTTOM BNC HOLE - vertical through center for mounting on radio
+  const bottomBncGeometry = createCylinder(params.radioHoleDiameter / 2, params.baseHeight + 10, 24);
+  bottomBncGeometry.translate(0, -5, 0);
+  csg = csg.subtract(CSG.fromGeometry(bottomBncGeometry));
+
+  // 16. BOTTOM BNC RECESS - flat area on bottom for connector body to seat
+  const bncRecessDepth = 3;
+  const bncRecessDiameter = params.radioHoleDiameter + 6;
+  const bncRecessGeometry = createCylinder(bncRecessDiameter / 2, bncRecessDepth + 1, 24);
+  bncRecessGeometry.translate(0, -0.5, 0);
+  csg = csg.subtract(CSG.fromGeometry(bncRecessGeometry));
+
   return csg;
 }
 
@@ -173,7 +185,7 @@ export async function buildAntennaModelWithProgress(
   params: BuildParams,
   onProgress?: (progress: number) => void
 ): Promise<THREE.BufferGeometry> {
-  const totalSteps = 14;
+  const totalSteps = 16;
   let currentStep = 0;
 
   const reportProgress = async () => {
@@ -305,6 +317,20 @@ export async function buildAntennaModelWithProgress(
     0
   );
   csg = csg.subtract(CSG.fromGeometry(counterpoiseGeometry));
+  await reportProgress();
+
+  // 15. BOTTOM BNC HOLE - vertical through center for mounting on radio
+  const bottomBncGeometry = createCylinder(params.radioHoleDiameter / 2, params.baseHeight + 10, 24);
+  bottomBncGeometry.translate(0, -5, 0);
+  csg = csg.subtract(CSG.fromGeometry(bottomBncGeometry));
+  await reportProgress();
+
+  // 16. BOTTOM BNC RECESS - flat area on bottom for connector body to seat
+  const bncRecessDepth = 3;
+  const bncRecessDiameter = params.radioHoleDiameter + 6;
+  const bncRecessGeometry = createCylinder(bncRecessDiameter / 2, bncRecessDepth + 1, 24);
+  bncRecessGeometry.translate(0, -0.5, 0);
+  csg = csg.subtract(CSG.fromGeometry(bncRecessGeometry));
   await reportProgress();
 
   return csg.toGeometry();

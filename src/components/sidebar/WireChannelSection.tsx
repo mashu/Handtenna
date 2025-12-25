@@ -26,9 +26,10 @@ export function WireChannelSection({ params, onParamChange }: WireChannelSection
       <Note>
         <strong>All features pre-cut:</strong><br />
         • Top wire hole → vertical channel → nut bore<br />
-        • Bottom wire hole → vertical channel → solder area<br />
-        • BNC hole + mounting flat<br />
-        • Counterpoise hole<br />
+        • Bottom wire hole → vertical channel → center<br />
+        • Bottom BNC hole (screws onto radio)<br />
+        • Side BNC hole + mounting flat<br />
+        • Counterpoise holes<br />
         • Hex nut pocket
       </Note>
     </Section>
